@@ -1,6 +1,8 @@
 ﻿using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace IoTEventHub
@@ -23,12 +25,18 @@ namespace IoTEventHub
         {
             InitializeComponent();
 
+            // Fill actions combo
+            comboAction.Items.Add("Get statistics");
+            comboAction.Items.Add("Get hub config");
+            comboAction.Items.Add("Put statistics");
+            comboAction.SelectedIndex = 0;
+
             // Substribe to logging
-            StatisticsSingleton.Instance.StatusLogged += PrintToLog;
-            StatisticsSingleton.Instance.LogMessage("Subscribed to logger");
+            Common.StatisticsSingleton.Instance.StatusLogged += PrintToLog;
+            Common.StatisticsSingleton.Instance.LogMessage("Subscribed to logger");
 
             // Create processor
-            var config = StatisticsSingleton.Instance.HubConfig;
+            var config = Common.StatisticsSingleton.Instance.HubConfig;
             var storageContainerName = "messagehost";
             var consumerGroupName = PartitionReceiver.DefaultConsumerGroupName;
             _processor = new EventProcessorHost(config.HubName, consumerGroupName, config.IotHubConnectionString, config.StorageConnectionString, storageContainerName);
@@ -48,7 +56,7 @@ namespace IoTEventHub
             btnStop.Enabled = true;
 
             // Register the event processor
-            await _processor.RegisterEventProcessorAsync<LoggingEventProcessor>();
+            await _processor.RegisterEventProcessorAsync<Common.LoggingEventProcessor>();
         }
 
         private async void btnStop_Click(object sender, EventArgs e)
@@ -58,13 +66,18 @@ namespace IoTEventHub
             btnStop.Enabled = false;
 
             // Save data and unregister the event processor
-            StatisticsSingleton.Instance.Save();
+            Common.StatisticsSingleton.Instance.Save();
             await _processor.UnregisterEventProcessorAsync();
         }
 
         private void btnRefresh_Click(object sender, EventArgs e)
         {
             UpdateChart();
+        }
+
+        private void btnReadFromAzure_Click(object sender, EventArgs e)
+        {
+            bgwSynchronization.RunWorkerAsync(comboAction.SelectedItem.ToString());
         }
 
         private void Main_FormClosing(object sender, FormClosingEventArgs e)
@@ -195,7 +208,7 @@ namespace IoTEventHub
             };
             chart.Model.Series.Add(curveCount);
 
-            var items = StatisticsSingleton.Instance.Statistics;
+            var items = Common.StatisticsSingleton.Instance.Statistics;
             chart.Model.Axes[0].Minimum = -1;
             chart.Model.Axes[0].AbsoluteMinimum = -1;
             chart.Model.Axes[0].Maximum = items.Length * 1.1;
@@ -227,7 +240,7 @@ namespace IoTEventHub
         {
             var action = new Action(() =>
             {
-                rtbLog.AppendText($"{DateTime.Now}:{message}\n");
+                rtbLog.AppendText($"{DateTime.Now}: {message}\n");
                 rtbLog.ScrollToCaret();
             });
 
@@ -239,6 +252,40 @@ namespace IoTEventHub
             {
                 action();
             }
+        }
+
+        private void bgwSynchronization_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
+        {
+            // Must run async tasks on a separate thread: https://msdn.microsoft.com/en-us/magazine/gg598924.aspx
+            var task = e.Argument.ToString();
+            List<Common.Statistics> statistics;
+            switch (task)
+            {
+                case "Get statistics":
+                    statistics = Common.SynchronizationExtensions.GetStatistics();
+                    e.Result = $"Found {statistics.Count} statistics";
+                    break;
+
+                case "Get hub config":
+                    var config = Common.SynchronizationExtensions.GetHubConfig();
+                    e.Result = $"HubName: {config.HubName}";
+                    break;
+
+                case "Put statistics":
+                    statistics = Common.StatisticsSingleton.Instance.Statistics.ToList();
+                    Common.SynchronizationExtensions.PutStatistics(statistics, "TestUpload.json");
+                    e.Result = "Uploaded statistics";
+                    break;
+
+                default:
+                    e.Result = $"Unknown task: {task}";
+                    break;
+            }
+        }
+
+        private void bgwSynchronization_RunWorkerCompleted(object sender, System.ComponentModel.RunWorkerCompletedEventArgs e)
+        {
+            PrintToLog(e.Result.ToString());
         }
     }
 }

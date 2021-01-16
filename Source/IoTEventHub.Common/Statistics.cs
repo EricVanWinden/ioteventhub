@@ -1,9 +1,9 @@
-﻿namespace IoTEventHub
+﻿namespace IoTEventHub.Common
 {
     /// <summary>
     /// Single unit of statistical data
     /// </summary>
-    class Statistics
+    public class Statistics
     {
         /// <summary>
         /// The key (device-year-month-day-hour)

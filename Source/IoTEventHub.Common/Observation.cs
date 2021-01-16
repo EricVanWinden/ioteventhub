@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace IoTEventHub
+namespace IoTEventHub.Common
 {
     /// <summary>
     /// Class to store a single observation

@@ -1,4 +1,4 @@
-﻿namespace IoTEventHub
+﻿namespace IoTEventHub.Common
 {
     /// <summary>
     /// The configuration of the IoT hub

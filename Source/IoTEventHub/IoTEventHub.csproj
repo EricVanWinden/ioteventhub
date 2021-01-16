@@ -12,9 +12,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Azure.EventHubs.Processor" Version="4.2.0" />
     <PackageReference Include="OxyPlot.WindowsForms" Version="2.0.0" />
-    <PackageReference Include="System.ComponentModel.EventBasedAsync" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IoTEventHub.Common\IoTEventHub.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

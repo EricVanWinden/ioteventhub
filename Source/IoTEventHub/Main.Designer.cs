@@ -32,15 +32,18 @@ namespace IoTEventHub
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Main));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabEventProcessor = new System.Windows.Forms.TabPage();
+            this.btnExecuteAction = new System.Windows.Forms.Button();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.rtbLog = new System.Windows.Forms.RichTextBox();
             this.btnStop = new System.Windows.Forms.Button();
             this.btnStart = new System.Windows.Forms.Button();
             this.tabCharts = new System.Windows.Forms.TabPage();
             this.chart = new OxyPlot.WindowsForms.PlotView();
-            this.btnRefresh = new System.Windows.Forms.Button();
+            this.bgwSynchronization = new System.ComponentModel.BackgroundWorker();
+            this.comboAction = new System.Windows.Forms.ComboBox();
             this.tabControl.SuspendLayout();
             this.tabEventProcessor.SuspendLayout();
-            this.chart.SuspendLayout();
+            this.tabCharts.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl
@@ -57,6 +60,8 @@ namespace IoTEventHub
             // 
             // tabEventProcessor
             // 
+            this.tabEventProcessor.Controls.Add(this.comboAction);
+            this.tabEventProcessor.Controls.Add(this.btnExecuteAction);
             this.tabEventProcessor.Controls.Add(this.btnRefresh);
             this.tabEventProcessor.Controls.Add(this.rtbLog);
             this.tabEventProcessor.Controls.Add(this.btnStop);
@@ -69,6 +74,28 @@ namespace IoTEventHub
             this.tabEventProcessor.TabIndex = 0;
             this.tabEventProcessor.Text = "Event processor";
             this.tabEventProcessor.UseVisualStyleBackColor = true;
+            // 
+            // btnExecuteAction
+            // 
+            this.btnExecuteAction.Location = new System.Drawing.Point(423, 7);
+            this.btnExecuteAction.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.btnExecuteAction.Name = "btnExecuteAction";
+            this.btnExecuteAction.Size = new System.Drawing.Size(88, 27);
+            this.btnExecuteAction.TabIndex = 3;
+            this.btnExecuteAction.Text = "Execute";
+            this.btnExecuteAction.UseVisualStyleBackColor = true;
+            this.btnExecuteAction.Click += new System.EventHandler(this.btnReadFromAzure_Click);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(200, 7);
+            this.btnRefresh.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(88, 27);
+            this.btnRefresh.TabIndex = 0;
+            this.btnRefresh.Text = "Refresh";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // rtbLog
             // 
@@ -102,15 +129,9 @@ namespace IoTEventHub
             this.btnStart.Text = "Start";
             this.btnStart.UseVisualStyleBackColor = true;
             this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
-            //
-            // chart
-            //
-            this.chart.Location = new System.Drawing.Point(9, 7);
-            this.chart.Name = "chart";
-            this.chart.Dock = System.Windows.Forms.DockStyle.Fill;
             // 
             // tabCharts
-            //
+            // 
             this.tabCharts.Controls.Add(this.chart);
             this.tabCharts.Location = new System.Drawing.Point(4, 24);
             this.tabCharts.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -121,16 +142,31 @@ namespace IoTEventHub
             this.tabCharts.Text = "Charts";
             this.tabCharts.UseVisualStyleBackColor = true;
             // 
-            // btnRefresh
+            // chart
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(200, 7);
-            this.btnRefresh.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(88, 27);
-            this.btnRefresh.TabIndex = 0;
-            this.btnRefresh.Text = "Refresh";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.chart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.chart.Location = new System.Drawing.Point(4, 3);
+            this.chart.Name = "chart";
+            this.chart.PanCursor = System.Windows.Forms.Cursors.Hand;
+            this.chart.Size = new System.Drawing.Size(917, 485);
+            this.chart.TabIndex = 0;
+            this.chart.ZoomHorizontalCursor = System.Windows.Forms.Cursors.SizeWE;
+            this.chart.ZoomRectangleCursor = System.Windows.Forms.Cursors.SizeNWSE;
+            this.chart.ZoomVerticalCursor = System.Windows.Forms.Cursors.SizeNS;
+            // 
+            // bgwSynchronization
+            // 
+            this.bgwSynchronization.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgwSynchronization_DoWork);
+            this.bgwSynchronization.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgwSynchronization_RunWorkerCompleted);
+            // 
+            // comboAction
+            // 
+            this.comboAction.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.comboAction.FormattingEnabled = true;
+            this.comboAction.Location = new System.Drawing.Point(295, 10);
+            this.comboAction.Name = "comboAction";
+            this.comboAction.Size = new System.Drawing.Size(121, 23);
+            this.comboAction.TabIndex = 4;
             // 
             // Main
             // 
@@ -145,7 +181,7 @@ namespace IoTEventHub
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.tabControl.ResumeLayout(false);
             this.tabEventProcessor.ResumeLayout(false);
-            this.chart.ResumeLayout(false);
+            this.tabCharts.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -160,6 +196,9 @@ namespace IoTEventHub
         private System.Windows.Forms.Button btnStop;
         private System.Windows.Forms.RichTextBox rtbLog;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnExecuteAction;
+        private System.ComponentModel.BackgroundWorker bgwSynchronization;
+        private System.Windows.Forms.ComboBox comboAction;
     }
 }
 

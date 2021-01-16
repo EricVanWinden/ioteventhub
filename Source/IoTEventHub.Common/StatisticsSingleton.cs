@@ -1,14 +1,12 @@
-﻿using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace IoTEventHub
+namespace IoTEventHub.Common
 {
     /// <summary>
-    /// Singleton constuction to load, collect and save statistics on the IoT data
+    /// Singleton constuction to load, collect and save statistics of the IoT data
     /// </summary>
-    class StatisticsSingleton
+    public class StatisticsSingleton
     {
         #region Singleton
 
@@ -16,11 +14,6 @@ namespace IoTEventHub
         /// The lock object to prevent multithreading issues
         /// </summary>
         private static readonly object _lock = new object();
-
-        /// <summary>
-        /// The path for reading or writing the IoT data.
-        /// </summary>
-        private readonly string _path;
 
         /// <summary>
         /// The private instance (Singleton)
@@ -32,27 +25,8 @@ namespace IoTEventHub
         /// </summary>
         private StatisticsSingleton()
         {
-            var root = @"C:\Eric\GitHub\ioteventhub\Data";
-
-            // config
-            var path = Path.Combine(root, "HubConfig.json");
-            if (File.Exists(path))
-            {
-                string text = File.ReadAllText(path);
-                HubConfig = JsonConvert.DeserializeObject<HubConfig>(text);
-            }
-
-            // data
-            _path = Path.Combine(root, "Statistics.json");
-            if (File.Exists(_path))
-            {
-                string text = File.ReadAllText(_path);
-                _statistics = JsonConvert.DeserializeObject<List<Statistics>>(text);
-            }
-            else
-            {
-                _statistics = new List<Statistics>();
-            }
+            HubConfig = SynchronizationExtensions.GetHubConfig();
+            _statistics = SynchronizationExtensions.GetStatistics();
         }
 
         /// <summary>
@@ -105,6 +79,17 @@ namespace IoTEventHub
                 var array = _statistics.ToArray();
                 LogMessage($"Returning {array.Length} data points");
                 return array;
+            }
+        }
+
+        /// <summary>
+        /// The last statistic
+        /// </summary>
+        public Statistics LastStatistic
+        {
+            get
+            {
+                return _statistics.Last();
             }
         }
 
@@ -167,9 +152,7 @@ namespace IoTEventHub
         {
             lock (_lock)
             {
-                var text = JsonConvert.SerializeObject(_statistics);
-                File.WriteAllText(_path, text);
-                LogMessage($"Saved {_statistics.Count} data points to {_path}");
+                SynchronizationExtensions.PutStatistics(_statistics, "Statistics.json");
             }
         }
 
