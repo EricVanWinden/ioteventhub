@@ -94,6 +94,11 @@ namespace IoTEventHub.Common
         }
 
         /// <summary>
+        /// The last processed observation
+        /// </summary>
+        public Observation LastObservation { get; private set; }
+
+        /// <summary>
         /// Send the messsage to the log handler
         /// </summary>
         /// <param name="message">The message to log</param>
@@ -122,6 +127,7 @@ namespace IoTEventHub.Common
 
             lock (_lock)
             {
+                LastObservation = observation;
                 var key = $"{observation.Device}-{observation.EnqueuedTime.Value.Year}-{observation.EnqueuedTime.Value.Month}-{observation.EnqueuedTime.Value.Day}-{observation.EnqueuedTime.Value.Hour}";
                 var current = _statistics.FirstOrDefault(s => s.Key == key);
                 if (current == null)

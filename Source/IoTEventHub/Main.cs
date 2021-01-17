@@ -263,7 +263,8 @@ namespace IoTEventHub
             {
                 case "Get statistics":
                     statistics = Common.SynchronizationExtensions.GetStatistics();
-                    e.Result = $"Found {statistics.Count} statistics";
+
+                    e.Result = $"{string.Join("\n",statistics.TakeLast(10).Select(s => $"{s.Key} {s.Count} {s.AverageT}"))}";
                     break;
 
                 case "Get hub config":

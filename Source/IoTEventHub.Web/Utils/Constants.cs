@@ -13,6 +13,6 @@
         /// <summary>
         /// The url to be shown in swagger
         /// </summary>
-        public static string OpenApiContactUrl => "https://akzonobelpc.visualstudio.com/Color-IT/_versionControl?path=%24%2FColor-IT%2FBuildingBlocks%2FColorMatchDemonstrator";
+        public static string OpenApiContactUrl => "https://github.com/EricVanWinden/ioteventhub";
     }
 }

@@ -109,6 +109,8 @@ namespace IoTEventHub.Web
 
             services.AddHostedService<StatisticsService>();
             services.AddControllers();
+            var aikey = Configuration["APPINSIGHTS_CONNECTIONSTRING"];
+            services.AddApplicationInsightsTelemetry(aikey);
         }
 
         /// <summary>

@@ -8,9 +8,14 @@
 
   <PropertyGroup>
     <DocumentationFile>IoTEventHub.Web.xml</DocumentationFile>
+    <UserSecretsId>004f9dc2-54c0-48cf-b649-7deaaf4990a4</UserSecretsId>
+    <ApplicationInsightsResourceId>/subscriptions/9a1ff90b-e7d0-48ba-807a-2e114ee25dec/resourceGroups/iot/providers/microsoft.insights/components/ericsweatherwebapi</ApplicationInsightsResourceId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Extensions.AspNetCore.Configuration.Secrets" Version="1.0.0" />
+    <PackageReference Include="Azure.Identity" Version="1.2.2" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.15.0" />
     <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.7" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />

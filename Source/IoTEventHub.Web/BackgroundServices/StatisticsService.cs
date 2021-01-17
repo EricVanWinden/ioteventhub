@@ -1,7 +1,8 @@
-﻿using Microsoft.Azure.EventHubs;
+﻿using Microsoft.ApplicationInsights;
+using Microsoft.Azure.EventHubs;
 using Microsoft.Azure.EventHubs.Processor;
 using Microsoft.Extensions.Hosting;
-using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,6 +15,21 @@ namespace IoTEventHub.Web
     public class StatisticsService : BackgroundService
     {
         /// <summary>
+        /// Send events, metrics and other telemetry to the Application Insights service.
+        /// </summary>
+        private readonly TelemetryClient _telemetry;
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="telemetry"></param>
+        public StatisticsService(TelemetryClient telemetry)
+        {
+            _telemetry = telemetry;
+        }
+
+
+        /// <summary>
         /// Executes the hourly statistics calculation
         /// </summary>
         /// <param name="stoppingToken"></param>
@@ -21,7 +37,7 @@ namespace IoTEventHub.Web
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             // Substribe to logging
-            Common.StatisticsSingleton.Instance.StatusLogged += PrintToLog;
+            Common.StatisticsSingleton.Instance.StatusLogged += SendToApplicationInsights;
             Common.StatisticsSingleton.Instance.LogMessage("Subscribed to logger");
             var config = Common.StatisticsSingleton.Instance.HubConfig;
 
@@ -40,6 +56,7 @@ namespace IoTEventHub.Web
                 {
                     Common.StatisticsSingleton.Instance.Save();
                     stopwatch.Restart();
+                    _telemetry.TrackEvent("Save");
                 }
             }
 
@@ -52,9 +69,9 @@ namespace IoTEventHub.Web
         /// The logger
         /// </summary>
         /// <param name="message"></param>
-        public void PrintToLog(string message)
+        public void SendToApplicationInsights(string message)
         {
-            Console.WriteLine($"{DateTime.Now}: {message}\n");
+            _telemetry.TrackEvent("Log", new Dictionary<string, string> { { "message", message } });
         }
     }
 }

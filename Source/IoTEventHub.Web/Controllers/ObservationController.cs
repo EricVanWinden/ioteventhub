@@ -7,7 +7,7 @@ namespace IoTEventHub.Web
     /// Controller for statistics
     /// </summary>
     [Route("api/[controller]")]
-    public class StatisticsController : Controller
+    public class ObservationController : Controller
     {
         /// <summary>
         /// Returns the last recorded statistic
@@ -16,9 +16,9 @@ namespace IoTEventHub.Web
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public ActionResult<Common.Statistics> Get()
+        public ActionResult<Common.Observation> Get()
         {
-            return Ok(Common.StatisticsSingleton.Instance.LastStatistic);
+            return Ok(Common.StatisticsSingleton.Instance.LastObservation);
         }
     }
 }
