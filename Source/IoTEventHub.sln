@@ -12,7 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEventHub.Web", "IoTEventHub.Web\IoTEventHub.Web.csproj", "{AD07C920-71D4-427B-97D4-8280539B31DF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTEventHub.Common", "IoTEventHub.Common\IoTEventHub.Common.csproj", "{95D534EA-11FF-4251-9A26-A33024EE2A61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IoTEventHub.Common", "IoTEventHub.Common\IoTEventHub.Common.csproj", "{95D534EA-11FF-4251-9A26-A33024EE2A61}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IoTEventHub.Console", "IoTEventHub.Console\IoTEventHub.Console.csproj", "{5A9622CC-C0CC-4856-93C3-98BCC17546B0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -32,6 +34,10 @@ Global
 		{95D534EA-11FF-4251-9A26-A33024EE2A61}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95D534EA-11FF-4251-9A26-A33024EE2A61}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95D534EA-11FF-4251-9A26-A33024EE2A61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5A9622CC-C0CC-4856-93C3-98BCC17546B0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5A9622CC-C0CC-4856-93C3-98BCC17546B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5A9622CC-C0CC-4856-93C3-98BCC17546B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5A9622CC-C0CC-4856-93C3-98BCC17546B0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
