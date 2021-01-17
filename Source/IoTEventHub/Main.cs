@@ -229,7 +229,7 @@ namespace IoTEventHub
                 curvePmin.Points.Add(new OxyPlot.DataPoint(counter, item.MinimumP / 20.0));
                 curvePmax.Points.Add(new OxyPlot.DataPoint(counter, item.MaximumP / 20.0));
 
-                curveCount.Points.Add(new OxyPlot.DataPoint(counter, item.Count / 2));
+                curveCount.Points.Add(new OxyPlot.DataPoint(counter, Math.Min(item.Count / 2, 60)));
                 counter++;
             }
 

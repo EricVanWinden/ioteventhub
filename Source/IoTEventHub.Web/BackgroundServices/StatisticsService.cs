@@ -28,7 +28,6 @@ namespace IoTEventHub.Web
             _telemetry = telemetry;
         }
 
-
         /// <summary>
         /// Executes the hourly statistics calculation
         /// </summary>
@@ -46,7 +45,7 @@ namespace IoTEventHub.Web
             var consumerGroupName = PartitionReceiver.DefaultConsumerGroupName;
             var _processor = new EventProcessorHost(config.HubName, consumerGroupName, config.IotHubConnectionString, config.StorageConnectionString, storageContainerName);
             await _processor.RegisterEventProcessorAsync<Common.LoggingEventProcessor>();
-
+                      
             var stopwatch = new Stopwatch();
             var interval = 300000; // 5 minutes in milli seconds
             stopwatch.Start();
@@ -56,7 +55,7 @@ namespace IoTEventHub.Web
                 {
                     Common.StatisticsSingleton.Instance.Save();
                     stopwatch.Restart();
-                    _telemetry.TrackEvent("Save");
+                    _telemetry.TrackEvent("Save", new Dictionary<string, string> { { "machine", System.Environment.MachineName } });
                 }
             }
 
@@ -71,7 +70,7 @@ namespace IoTEventHub.Web
         /// <param name="message"></param>
         public void SendToApplicationInsights(string message)
         {
-            _telemetry.TrackEvent("Log", new Dictionary<string, string> { { "message", message } });
+            _telemetry.TrackEvent("Log", new Dictionary<string, string> { { "message", message }, { "machine", System.Environment.MachineName } });
         }
     }
 }
